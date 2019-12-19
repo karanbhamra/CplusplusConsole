@@ -1,145 +1,49 @@
 #include "Square.h"
 
-Square::Square(int xSp, int ySp, int xInit, int yInit, int width, int height, COLORREF col) : Sprite(xInit, yInit, width, height), xSpeed(xSp), ySpeed(ySp), color(col)
+
+
+Square::Square(int xSp, int ySp, int xpos, int ypos, int width, int height, Util::Color drawColor, Util::Color eraseColor)
 {
-	prevX = 0;
-	prevY = 0;
-	prevSpX = xSp;
-	prevSpY = ySp;
+	this->x = xpos;
+	this->y = ypos;
+	this->xSpeed = xSp;
+	this->ySpeed = ySp;
+	this->width = width;
+	this->height = height;
+	this->drawColor = drawColor;
+	this->eraseColor = eraseColor;
+	currentHitbox = Util::Rectangle::Rectangle(x, y, width, height);
+	previousHitbox = currentHitbox;
+
 }
 
-void Square::Draw(HDC dc)
+
+
+void Square::Draw(HDC dc, Util::Rectangle hitbox, Util::Color color)
 {
-	//Movement with higher speeds doesn't work that well for erasing
-	//There are several erasing errors with this code
+	// erase previous hitbox
+	// we must use the RGB macro which has 3 parameters, each byte represents r,g, b
 
-	Sprite::Draw();
+	/*auto tempColor = Util::Color::Color(12, 12, 12);
+	for (size_t row = 0; row < height; row++)
+	{
+		for (size_t col = 0; col < width; col++)
+		{
+			SetPixel(dc, static_cast<int>(previousHitbox.getX() + col), static_cast<int>(previousHitbox.getY() + row), tempColor.getRGB());
 
-	if (prevSpX == 0 && prevSpY > 0)
-	{
-		for (int i = 0; i <= height; i++)
-		{
-			for (int t = 0; t < abs(prevSpY); t++)
-			{
+		}
+	}*/
 
-				SetPixel(dc, prevX + i, prevY + t, (0, 0, 0));
-			}
-		}
-	}
-	else if (prevSpX == 0 && prevSpY < 0)
-	{
-		for (int i = 0; i <= height; i++)
-		{
-			for (int t = 0; t < abs(prevSpY); t++)
-			{
+	//system("cls");
 
-				SetPixel(dc, prevX + i, prevY + height - t, (0, 0, 0));
-			}
-		}
-	}
-	else if (prevSpY == 0 && prevSpX > 0)
+	// draw current hitbox
+	// we must use the RGB macro which has 3 parameters, each byte represents r,g, b
+	for (size_t row = 0; row < height; row++)
 	{
-		for (int i = 0; i <= width; i++)
+		for (size_t col = 0; col < width; col++)
 		{
-			for (int t = 0; t < abs(prevSpX); t++)
-			{
+			SetPixel(dc, static_cast<int>(currentHitbox.getX() + col), static_cast<int>(currentHitbox.getY() + row), color.getRGB());
 
-				SetPixel(dc, prevX + t, prevY + i, (0, 0, 0));
-			}
-		}
-	}
-	else if (prevSpY == 0 && prevSpX < 0)
-	{
-		for (int i = 0; i <= width; i++)
-		{
-			for (int t = 0; t < abs(prevSpX); t++)
-			{
-
-				SetPixel(dc, prevX + width - t, prevY + i, (0, 0, 0));
-			}
-		}
-	}
-	else if (prevSpX > 0 && prevSpY > 0)
-	{
-		for (int i = 0; i <= height; i++)
-		{
-			for (int t = 0; t < abs(prevSpY); t++)
-			{
-
-				SetPixel(dc, prevX + (i), prevY + t, (0, 0, 0));
-			}
-		}
-
-		for (int i = 0; i <= width; i++) 
-		{
-			for (int t = 0; t < abs(prevSpX); t++)
-			{
-				SetPixel(dc, prevX + t, prevY + (i), (0, 0, 0));
-			}
-		}
-	}
-	else if (prevSpY < 0 && prevSpX > 0)
-	{
-		for (int t = 0; t < abs(prevSpY); t++)
-		{
-			for (int i = 0; i <= height; i++)
-			{
-				SetPixel(dc, prevX + t, prevY + height - (i), (0, 0, 0));
-			}
-		}
-		for (int t = 0; t < abs(prevSpX); t++)
-		{
-			for (int i = 0; i <= width; i++)
-			{
-				SetPixel(dc, prevX + i, prevY + height - t, (0, 0, 0));
-			}
-		}
-	}
-	else if (prevSpY > 0 && prevSpX < 0)
-	{
-		for (int t = 0; t < abs(prevSpY); t++)
-		{
-			for (int i = 0; i <= height; i++)
-			{
-				SetPixel(dc, prevX + width + t, prevY + i, (0, 0, 0));
-			}
-		}
-		for (int t = 0; t < abs(prevSpX); t++)
-		{
-			for (int i = 0; i <= width; i++)
-			{
-				SetPixel(dc, prevX + i, prevY + height + t, (0, 0, 0));
-			}
-		}
-	}
-	else
-	{
-		for (int t = 0; t < abs(prevSpY); t++)
-		{
-			for (int i = 0; i <= height; i++)
-			{
-				SetPixel(dc, prevX + width - t, prevY + i, (0, 0, 0));
-			}
-		}
-		for (int t = 0; t < abs(prevSpX); t++)
-		{
-			for (int i = 0; i <= width; i++)
-			{
-				SetPixel(dc, prevX + i, prevY + height + t, (0, 0, 0));
-			}
-		}
-	}
-
-	int row, column;
-	row = 0;
-	column = 0;
-	for (unsigned i = 0; i < height; i++)
-	{
-		row = i;
-		for (unsigned j = 0; j < width; j++)
-		{
-			column = j;
-			SetPixel(dc, x + column, y + row, color);
 		}
 	}
 
@@ -147,9 +51,6 @@ void Square::Draw(HDC dc)
 
 void Square::Update(int ScreenWidth, int ScreenHeight)
 {
-	Sprite::Update();
-
-
 	if (width + x >= ScreenWidth)
 	{
 		xSpeed *= -1;
@@ -167,22 +68,76 @@ void Square::Update(int ScreenWidth, int ScreenHeight)
 		ySpeed *= -1;
 	}
 
-	prevX = x;
-	prevY = y;
-	prevSpX = xSpeed;
-	prevSpY = ySpeed;
 	x += xSpeed;
 	y += ySpeed;
+	currentHitbox = Util::Rectangle::Rectangle(x, y, width, height);
+
 }
 
-void Square::ChangeColor(int r, int g, int b)
+void Square::ChangeColor(unsigned char r, unsigned char g, unsigned char b)
 {
-	color = (r, g, b);
+	drawColor.setRGB(r, g, b);
 }
 
-void Square::Intersects(Square* sq)
+void Square::UpdatePreviousHitbox(Util::Rectangle hitbox)
 {
-	if (sq->x > x&& sq->y > y&& sq->x < x + width && sq->y < y + height)
+	previousHitbox = hitbox;
+}
+
+Util::Rectangle Square::GetCurrentHitbox() const
+{
+	return currentHitbox;
+}
+
+Util::Rectangle Square::GetPreviousHitbox() const
+{
+	return previousHitbox;
+}
+
+Util::Color Square::GetDrawColor() const
+{
+	return drawColor;
+}
+
+Util::Color Square::GetEraseColor() const
+{
+	return eraseColor;
+}
+
+int Square::GetXSpeed() const
+{
+	return xSpeed;
+}
+
+int Square::GetYSpeed() const
+{
+	return ySpeed;
+}
+
+void Square::SetYSpeed(int yspeed)
+{
+	ySpeed = yspeed;
+}
+
+void Square::SetXSpeed(int xspeed)
+{
+	xSpeed = xspeed;
+}
+
+void Square::Intersects(Square& sq)
+{
+	if (sq.GetCurrentHitbox().IntersectsWith(this->GetCurrentHitbox()))
+	{
+		auto tempx = this->GetXSpeed();
+		auto tempy = this->GetYSpeed();
+
+		SetYSpeed(sq.GetYSpeed());
+		SetXSpeed(sq.GetXSpeed());
+
+		sq.SetXSpeed(tempx);
+		sq.SetYSpeed(tempy);
+	}
+	/*if (sq->x > x&& sq->y > y&& sq->x < x + width && sq->y < y + height)
 	{
 		int tmpX = xSpeed;
 		int tmpY = ySpeed;
@@ -199,5 +154,5 @@ void Square::Intersects(Square* sq)
 		ySpeed = sq->ySpeed;
 		sq->xSpeed = tmpX;
 		sq->ySpeed = tmpY;
-	}
+	}*/
 }

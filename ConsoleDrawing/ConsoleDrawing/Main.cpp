@@ -27,42 +27,25 @@ int main()
 	rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
 
-	Square square(1, 1, 0, 0, 50, 50, (255, 255, 255));//Collor is always red for some reason
+	Square square(10, 10, 0, 0, 50, 50, Util::Color(0, 255, 0), Util::Color(12, 12, 12));
+	Square square2(-10, 10, 500, 0, 50, 50, Util::Color(255, 255, 0), Util::Color(12, 12, 12));
 
-	Square square2(1, 1, 500, 300, 30, 30, (100, 70, 180));
-
-	Square square3(1, 1, 325, 100, 25, 25, (255, 200, 100));
-
-	Square square4(5, 5, 200, 40, 8, 8, (225, 70, 180));
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+	columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+	rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
 	while (true)
 	{
-		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-		columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-		rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-
-		square.Draw(dc);
-		square2.Draw(dc);
-		square3.Draw(dc);
-		square4.Draw(dc);
-		
-
-		square.Update(columns * 8, rows * 16);//16 pixels per row, 8 pixels per column
-
+		square.Intersects(square2);
+		square.Draw(dc, square.GetPreviousHitbox(), square.GetEraseColor());
+		square2.Draw(dc, square2.GetPreviousHitbox(), square2.GetEraseColor());
+		square.Update(columns * 8, rows * 16);
 		square2.Update(columns * 8, rows * 16);
+		square.Draw(dc, square.GetCurrentHitbox(), square.GetDrawColor());
+		square2.Draw(dc, square2.GetCurrentHitbox(), square2.GetDrawColor());
+		square.UpdatePreviousHitbox(square.GetCurrentHitbox());
+		square2.UpdatePreviousHitbox(square2.GetCurrentHitbox());
 
-		square3.Update(columns * 8, rows * 16);
-
-		square4.Update(columns * 8, rows * 16);
-
-		square.Intersects(&square2);
-		square.Intersects(&square3);
-		square.Intersects(&square4);
-
-		square2.Intersects(&square3);
-		square2.Intersects(&square4);
-
-		square3.Intersects(&square4);
 	}
 
 	ReleaseDC(myconsole, dc);

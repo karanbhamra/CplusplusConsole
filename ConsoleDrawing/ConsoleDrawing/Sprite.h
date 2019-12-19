@@ -1,18 +1,22 @@
 #pragma once
+#include <Windows.h>
+
+#include "Rectangle.h"
 class Sprite
 {
 protected:
-	int x;
-	int y;
-	int width;
-	int height;
+	int x{};
+	int y{};
+	int width{};
+	int height{};
+
+	Util::Rectangle currentHitbox;
+	Util::Rectangle previousHitbox;
+
 
 public:
-	Sprite(int xInit, int yInit, int width, int height);
-
-	virtual void Draw();
-
-	virtual void Update();
+	Sprite() {};
+	virtual void Update(int ScreenHeight, int ScreenWidth) = 0;
 private:
 
 };
