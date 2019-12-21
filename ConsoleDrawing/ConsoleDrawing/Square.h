@@ -1,25 +1,35 @@
 #pragma once
 #include "Sprite.h"
-#include <Windows.h>
-
-class Square : Sprite
+#include "Color.h"
+class Square : protected Sprite
 {
 public:
-	Square(int xSp, int ySp, int xInit, int yInit, int width, int height, COLORREF col);
+	Square(int xSp, int ySp, int xInit, int yInit, int width, int height, Util::Color drawColor, Util::Color eraseColor);
 
-	void Draw(HDC dc);
+	void Draw(HDC dc, Util::Rectangle hitbox, Util::Color col);
 
-	void Update(int ScreenHeight, int ScreenWidth);
+	void Update(int ScreenHeight, int ScreenWidth) override;
 
-	void ChangeColor(int r, int g, int b);
+	void ChangeColor(unsigned char r, unsigned char g, unsigned char b);
 
-	void Intersects(Square* sq);
+	void UpdatePreviousHitbox(Util::Rectangle hitbox);
+
+	Util::Rectangle GetCurrentHitbox() const;
+	Util::Rectangle GetPreviousHitbox() const;
+
+	Util::Color GetDrawColor() const;
+	Util::Color GetEraseColor() const;
+	int GetXSpeed() const;
+	int GetYSpeed() const;
+
+	void SetYSpeed(int yspeed);
+	void SetXSpeed(int xspeed);
+
+	void Intersects(Square& sq);
 private:
-	int xSpeed;
-	int ySpeed;
-	COLORREF color;
-	int prevX;
-	int prevY;
-	int prevSpX;
-	int prevSpY;
+	int xSpeed{};
+	int ySpeed{};
+	Util::Color drawColor{};
+	Util::Color eraseColor{};
+
 };
